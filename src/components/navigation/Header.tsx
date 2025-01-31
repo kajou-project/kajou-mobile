@@ -1,11 +1,23 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StatusBar, StyleSheet, Text, View } from "react-native";
 import theme from "../../styles/theme";
 import Bell from "../../assets/icons/bell.svg";
+import MapPin from "../../assets/icons/map-pin.svg";
 
-export default function Header(): React.JSX.Element {
+interface Props {
+  city: string | null;
+}
+
+export default function Header({ city }: Props): React.JSX.Element {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}></Text>
+      {city ? (
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+          <MapPin />
+          <Text style={styles.title}>{city}</Text>
+        </View>
+      ) : (
+        <Text></Text>
+      )}
 
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <View style={styles.iconContainer}>
@@ -14,6 +26,8 @@ export default function Header(): React.JSX.Element {
 
         <View style={styles.imgContainer}>{/* User Icon */}</View>
       </View>
+
+      <StatusBar barStyle="light-content" />
     </View>
   );
 }
@@ -22,34 +36,34 @@ const styles = StyleSheet.create({
   container: {
     display: "flex",
     flexDirection: "row",
-    backgroundColor: theme.colors.main[600],
+    backgroundColor: theme.colors.primary[600],
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomRightRadius: 16,
     borderBottomLeftRadius: 16,
-    paddingTop: 40,
+    paddingTop: 50,
     paddingHorizontal: 24,
-    paddingBottom: 20,
+    paddingBottom: 20
   },
   title: {
     color: "white",
-    fontSize: 20,
+    fontSize: 20
   },
   iconContainer: {
     width: 35,
     height: 35,
     marginRight: 20,
     borderRadius: 999,
-    backgroundColor: theme.colors.main[100],
+    backgroundColor: theme.colors.primary[100],
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center"
   },
   imgContainer: {
     width: 52,
     height: 52,
     borderRadius: 999,
-    backgroundColor: theme.colors.main[200],
+    backgroundColor: theme.colors.primary[200],
     justifyContent: "center",
-    alignItems: "center",
-  },
+    alignItems: "center"
+  }
 });
