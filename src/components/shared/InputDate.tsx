@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInputProps, View } from "react-native";
 import theme from "../../styles/theme";
-import { Calendar, CalendarList } from "react-native-calendars";
-import { DateObject, DayComponentProps } from "../../interfaces/ReactNativeCalendar.interface";
-import ChevronLeft from "../../assets/icons/chevron-left.svg";
-import ChevronRight from "../../assets/icons/chevron-right.svg";
 import { format } from "date-fns";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
@@ -12,6 +8,7 @@ interface InputProps extends TextInputProps {
   label: string;
   type: "date" | "time" | "datetime";
   onChangeDate?: Function;
+  containerStyle?: object;
 }
 
 export default function InputDate(props: InputProps): React.JSX.Element {
@@ -45,7 +42,7 @@ export default function InputDate(props: InputProps): React.JSX.Element {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={rest.containerStyle}>
       <Text style={styles.label}>{rest.label}</Text>
 
       <Pressable style={[styles.input, style]} onPress={() => setOpen(!open)}>
@@ -60,51 +57,16 @@ export default function InputDate(props: InputProps): React.JSX.Element {
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
       />
-
-      {/* {open && (
-        // <View style={styles.calendar}>
-        //   <CalendarList
-        //     showScrollIndicator={true}
-        //     calendarStyle={{ width: '100%' }}
-        //   />
-        // </View>
-        <Calendar
-          renderArrow={(direction: "left" | "right") => {
-            {
-              return direction === "left" ? <ChevronLeft /> : <ChevronRight />;
-            }
-          }}
-          dayComponent={({ date, state }: DayComponentProps) => {
-            return (
-              <Pressable style={styles.day} onPress={() => chooseDate(date)}>
-                <Text
-                  style={[
-                    styles.dayText,
-                    state === "disabled" ? styles.disabledText : undefined,
-                    state === "today" ? styles.todayText : undefined,
-                  ]}
-                >
-                  {date.day}
-                </Text>
-              </Pressable>
-            );
-          }}
-          style={styles.calendar}
-        />
-      )} */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   label: {
     marginBottom: 8,
   },
   input: {
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.white,
     borderColor: theme.colors.secondary[600],
     borderWidth: 1,
     borderRadius: 8,
@@ -140,7 +102,7 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   todayText: {
-    color: theme.colors.main[600],
+    color: theme.colors.primary[600],
     fontWeight: "bold"
   },
   disabledText: {

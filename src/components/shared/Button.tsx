@@ -4,8 +4,9 @@ import theme from "../../styles/theme";
 
 interface ButtonProps extends TouchableOpacityProps {
   type: "primary" | "secondary";
-  label: string;
+  label?: string;
   disabled?: boolean;
+  icon?: React.JSX.Element;
 }
 
 export default function Button(props: ButtonProps): React.JSX.Element {
@@ -13,10 +14,11 @@ export default function Button(props: ButtonProps): React.JSX.Element {
 
   return (
     <TouchableOpacity
-      style={[styles.button, rest.disabled ? styles.disabled : styles.primary, style]}
+      style={[styles.button, rest.disabled ? styles.disabled : styles[rest.type], style]}
       onPress={rest.disabled ? () => {} : rest.onPress}
     >
-      <Text style={styles.label}>{props.label}</Text>
+      {props.label && <Text style={styles.label}>{props.label}</Text>}
+      {props.icon}
     </TouchableOpacity>
   );
 }
@@ -29,13 +31,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   primary: {
-    backgroundColor: theme.colors.main[600],
+    backgroundColor: theme.colors.primary[600],
   },
   secondary: {
-    backgroundColor: theme.colors.secondary[600],
+    backgroundColor: theme.colors.secondary[500],
   },
   disabled: {
-    backgroundColor: theme.colors.main[600],
+    backgroundColor: theme.colors.primary[600],
     opacity: 0.5,
   },
   label: {

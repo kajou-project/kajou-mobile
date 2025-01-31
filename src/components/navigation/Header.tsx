@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 16,
     paddingTop: 50,
     paddingHorizontal: 24,
-    paddingBottom: 20
+    paddingBottom: 20,
   },
   title: {
     color: "white",

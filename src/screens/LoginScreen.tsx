@@ -18,13 +18,20 @@ import Button from "../components/shared/Button";
 import { useNavigation } from "@react-navigation/native";
 import { dispatch } from "../utils/navigation";
 import { supabase } from "../utils/supabase";
+import theme from "../styles/theme";
 
 export default function LoginScreen(): React.JSX.Element {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   async function submit(): Promise<void> {
+    if (errorCheck()) {
+      return;
+    }
+
+    // Sign in with email and password
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -37,6 +44,35 @@ export default function LoginScreen(): React.JSX.Element {
 
     dispatch(navigation, "BottomTabs");
   }
+
+  function errorCheck(): boolean {
+    const errors: Record<string, string> = {};
+
+    if (!email) {
+      errors.email = "Veuillez renseigner votre adresse mail";
+    }
+
+    if (!password) {
+      errors.password = "Veuillez renseigner votre mot de passe";
+    }
+
+    setErrors(errors);
+    return Object.keys(errors).length > 0;
+  }
+
+  const onChangeEmail = (text: string): void => {
+    setEmail(text);
+
+    delete errors.email;
+    setErrors({  ...errors });
+  };
+
+  const onChangePassword = (text: string): void => {
+    setPassword(text);
+
+    delete errors.password;
+    setErrors({ ...errors });
+  };
 
   return (
     <KeyboardAvoidingView
@@ -56,17 +92,19 @@ export default function LoginScreen(): React.JSX.Element {
               autoCorrect={false}
               autoCapitalize="none"
               keyboardType="email-address"
-              style={{ marginBottom: 24 }}
+              containerStyle={{ marginBottom: 24 }}
               value={email}
-              onChangeText={setEmail}
+              error={errors.email}
+              onChangeText={onChangeEmail}
             />
 
             <InputPassword
               label="Mot de passe"
               placeholder="Mot de passe"
-              style={{ marginBottom: 16 }}
+              containerStyle={{ marginBottom: 16 }}
               value={password}
-              onChangeText={setPassword}
+              error={errors.password}
+              onChangeText={onChangePassword}
             />
 
             <Pressable style={styles.forgotPassword}>
@@ -96,7 +134,7 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.white,
   },
   curve: {
     position: "absolute",

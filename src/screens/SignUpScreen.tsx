@@ -18,6 +18,7 @@ import PasswordForm from "../components/sign-up/PasswordForm";
 import { UserSignUp } from "../interfaces/User.interface";
 import { User } from "@supabase/supabase-js";
 import { dispatch } from "../utils/navigation";
+import theme from "../styles/theme";
 
 export default function SignUpScreen(): React.JSX.Element {
   const navigation = useNavigation();
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.white,
   },
   view: {
     width: "100%",
