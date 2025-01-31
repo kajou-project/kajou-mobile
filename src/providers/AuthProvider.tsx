@@ -4,7 +4,7 @@ import { supabase } from "../utils/supabase";
 import { User } from "@supabase/supabase-js";
 import { Profile } from "../interfaces/User.interface";
 
-export function AuthProvider({ children }: React.PropsWithChildren) {
+export function AuthProvider({ children }: React.PropsWithChildren): React.JSX.Element {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);

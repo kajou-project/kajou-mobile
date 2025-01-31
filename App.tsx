@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
@@ -10,6 +10,7 @@ import { supabase } from "./src/utils/supabase";
 import { LocaleConfig } from "react-native-calendars";
 import { AuthProvider } from "./src/providers/AuthProvider";
 import BottomTabs from "./src/screens/BottomTabs";
+import SplashScreen from "./src/screens/SplashScreen";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -34,7 +35,7 @@ LocaleConfig.locales["fr"] = {
     "Septembre",
     "Octobre",
     "Novembre",
-    "Décembre",
+    "Décembre"
   ],
   monthNamesShort: [
     "Janv.",
@@ -48,50 +49,50 @@ LocaleConfig.locales["fr"] = {
     "Sept.",
     "Oct.",
     "Nov.",
-    "Déc.",
+    "Déc."
   ],
-  dayNames: [
-    "Dimanche",
-    "Lundi",
-    "Mardi",
-    "Mercredi",
-    "Jeudi",
-    "Vendredi",
-    "Samedi",
-  ],
+  dayNames: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
   dayNamesShort: ["Dim.", "Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam."],
-  today: "Aujourd'hui",
+  today: "Aujourd'hui"
 };
 LocaleConfig.defaultLocale = "fr";
 
-export default function App(): React.JSX.Element {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+export default function App(): React.JSX.Element | null {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  supabase.auth.onAuthStateChange((_, session) => {
-    if (session) {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-    }
-  });
+  // Vérifier la session au démarrage
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setIsAuthenticated(!!data.session);
+    };
+
+    checkSession();
+  }, []);
+
+  // Écouter les changements d'authentification
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  // Affichage conditionnel pour éviter un écran blanc au démarrage
+  if (isAuthenticated === null) {
+    return <SplashScreen />;
+  }
 
   return (
     <AuthProvider>
       <SafeAreaProvider>
         <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName={isAuthenticated ? "BottomTabs" : "Login"}
-          >
-            <Stack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="SignUp"
-              component={SignUpScreen}
-              options={{ headerShown: false }}
-            />
+          <Stack.Navigator initialRouteName={isAuthenticated ? "BottomTabs" : "Login"}>
+            <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
             <Stack.Screen
               name="BottomTabs"
               component={BottomTabs}
