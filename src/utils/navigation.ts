@@ -1,11 +1,6 @@
-import {
-  CommonActions,
-  NavigationProp,
-  NavigationState,
-} from "@react-navigation/native";
+import { CommonActions, NavigationProp, NavigationState } from "@react-navigation/native";
 
-interface Navigation
-  extends Omit<NavigationProp<ReactNavigation.RootParamList>, "getState"> {
+interface Navigation extends Omit<NavigationProp<ReactNavigation.RootParamList>, "getState"> {
   getState(): NavigationState | undefined;
 }
 
@@ -15,10 +10,7 @@ interface Navigation
  * @param {string} name - The name of the screen
  * @return {void}
  */
-export function dispatch(navigation: Navigation, name: string): void {
-  const home = CommonActions.reset({
-    index: 1,
-    routes: [{ name }],
-  });
+export function dispatch(navigation: Navigation, name: string, index: number = 1): void {
+  const home = CommonActions.reset({ index, routes: [{ name }] });
   navigation.dispatch(home);
 }
