@@ -15,14 +15,14 @@ import { useNavigation } from "@react-navigation/native";
 import { supabase } from "../utils/supabase";
 import InfosForm from "../components/sign-up/InfosForm";
 import PasswordForm from "../components/sign-up/PasswordForm";
-import { UserSignUp } from "../interfaces/User.interface";
+import { CompanySignUp, UserSignUp } from "../interfaces/User.interface";
 import { User } from "@supabase/supabase-js";
 import { dispatch } from "../utils/navigation";
 import theme from "../styles/theme";
 
-export default function SignUpScreen(): React.JSX.Element {
+export default function SignUpScreen({ route }: { route: any }): React.JSX.Element {
   const navigation = useNavigation();
-  const [user, setUser] = useState<UserSignUp>({} as UserSignUp);
+  const [user, setUser] = useState<UserSignUp | CompanySignUp>({} as UserSignUp | CompanySignUp);
   const [next, setNext] = useState(false);
 
   function nextStep(data: object): void {
@@ -41,15 +41,46 @@ export default function SignUpScreen(): React.JSX.Element {
       return;
     }
 
-    await createProfile(data.user);
+    if (route.params.type === "particulier") {
+      await createProfile(data.user);
+    } else {
+      await createCompany(data.user);
+    }
+
     dispatch(navigation, "BottomTabs");
   }
 
   async function createProfile(supabaseUser: User): Promise<void> {
+    if ("firstname" in user === false) {
+      Alert.alert("Erreur", "Vous ne pouvez pas créer de profil particulier avec un compte professionnel");
+      return;
+    }
+
     const { error } = await supabase.from("profiles").insert([
       {
         firstname: user.firstname,
         lastname: user.lastname,
+        phone: user.phone,
+        user_id: supabaseUser.id,
+      },
+    ]);
+
+    if (error) {
+      Alert.alert("Erreur", error.message);
+      return;
+    }
+  }
+
+  async function createCompany(supabaseUser: User): Promise<void> {
+    if ("name" in user === false) {
+      Alert.alert("Erreur", "Vous ne pouvez pas créer de compte professionnel avec un profil particulier");
+      return;
+    }
+
+    const { error } = await supabase.from("companies").insert([
+      {
+        name: user.name,
+        siret: user.siret,
         phone: user.phone,
         user_id: supabaseUser.id,
       },
@@ -68,6 +99,7 @@ export default function SignUpScreen(): React.JSX.Element {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         {next ? (
+          // Second step
           <ScrollView style={styles.view}>
             <Curve width={396} height={404} style={styles.curve} />
 
@@ -80,12 +112,13 @@ export default function SignUpScreen(): React.JSX.Element {
             <PasswordForm submit={submit} />
           </ScrollView>
         ) : (
+          // First step
           <View style={styles.container}>
             <Curve width={396} height={404} style={styles.curve} />
 
             <Logo width={240} height={62} style={{ marginBottom: 100 }} />
 
-            <InfosForm nextStep={nextStep} />
+            <InfosForm type={route.params.type} nextStep={nextStep} />
           </View>
         )}
       </TouchableWithoutFeedback>

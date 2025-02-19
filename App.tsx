@@ -12,6 +12,7 @@ import { AuthProvider } from "./src/providers/AuthProvider";
 import BottomTabs from "./src/screens/BottomTabs";
 import SplashScreen from "./src/screens/SplashScreen";
 import Profile from "./src/screens/Profile";
+import BeforeSignUp from "./src/screens/BeforeSignUp";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -91,7 +92,8 @@ export default function App(): React.JSX.Element | null {
     <AuthProvider>
       <SafeAreaProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={isAuthenticated ? "BottomTabs" : "Login"}>
+          <Stack.Navigator initialRouteName={isAuthenticated ? "BottomTabs" : "BeforeSignUp"}>
+            <Stack.Screen name="BeforeSignUp" component={BeforeSignUp} options={{ headerShown: false }} />
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
             <Stack.Screen

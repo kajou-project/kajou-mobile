@@ -1,10 +1,11 @@
 import { User } from "@supabase/supabase-js";
 import { createContext, useContext } from "react";
-import { Profile } from "../interfaces/User.interface";
+import { Company, Profile } from "../interfaces/User.interface";
 
 export interface AuthContextType {
   user: User | null;
   profile: Profile | null;
+  company: Company | null;
   loading: boolean;
   refreshProfile: () => void;
 }
@@ -13,8 +14,9 @@ export interface AuthContextType {
 const AuthContext = createContext({
   user: null,
   profile: null,
+  company: null,
   loading: true,
-  refreshProfile: () => {},
+  refreshProfile: () => {}
 } as AuthContextType);
 
 export const useAuth = () => useContext(AuthContext);

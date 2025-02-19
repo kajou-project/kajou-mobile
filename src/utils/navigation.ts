@@ -10,7 +10,12 @@ interface Navigation extends Omit<NavigationProp<ReactNavigation.RootParamList>,
  * @param {string} name - The name of the screen
  * @return {void}
  */
-export function dispatch(navigation: Navigation, name: string, index: number = 1): void {
-  const home = CommonActions.reset({ index, routes: [{ name }] });
+export function dispatch(
+  navigation: Navigation,
+  name: string,
+  params?: Object,
+  index: number = 1
+): void {
+  const home = CommonActions.reset({ index, routes: [{ name, params }] });
   navigation.dispatch(home);
 }

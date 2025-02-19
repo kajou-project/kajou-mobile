@@ -160,7 +160,7 @@ export default function HomeScreen(): React.JSX.Element {
       </View>
 
       {/* Recommandations */}
-      <Text style={styles.title}>Nos recommandations</Text>
+      {/* <Text style={styles.title}>Nos recommandations</Text>
 
       <View style={styles.recommendations}>
         {recommendations.map((r) => {
@@ -181,7 +181,7 @@ export default function HomeScreen(): React.JSX.Element {
             </View>
           )
         })}
-      </View>
+      </View> */}
     </ScrollView>
   );
 }

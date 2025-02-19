@@ -115,7 +115,7 @@ export default function LoginScreen(): React.JSX.Element {
 
             <Pressable
               style={styles.signUp}
-              onPress={() => dispatch(navigation, "SignUp")}
+              onPress={() => dispatch(navigation, "BeforeSignUp")}
             >
               <Text style={styles.signUpText}>
                 Pas encore de compte ? Inscrivez-vous
