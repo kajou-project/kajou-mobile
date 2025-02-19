@@ -1,13 +1,20 @@
-import { StatusBar, StyleSheet, Text, View } from "react-native";
+import { Pressable, StatusBar, StyleSheet, Text, View } from "react-native";
 import theme from "../../styles/theme";
 import Bell from "../../assets/icons/bell.svg";
 import MapPin from "../../assets/icons/map-pin.svg";
+import { useNavigation } from "@react-navigation/native";
 
 interface Props {
   city: string | null;
 }
 
 export default function Header({ city }: Props): React.JSX.Element {
+  const navigation = useNavigation();
+
+  const goToProfile = () => (): void => {
+    navigation.navigate("Profile" as never);
+  };
+
   return (
     <View style={styles.container}>
       {city ? (
@@ -24,7 +31,9 @@ export default function Header({ city }: Props): React.JSX.Element {
           <Bell />
         </View>
 
-        <View style={styles.imgContainer}>{/* User Icon */}</View>
+        <Pressable style={styles.imgContainer} onPress={goToProfile()}>
+          {/* User Icon */}
+        </Pressable>
       </View>
 
       <StatusBar barStyle="light-content" />

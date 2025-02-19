@@ -11,6 +11,7 @@ import { LocaleConfig } from "react-native-calendars";
 import { AuthProvider } from "./src/providers/AuthProvider";
 import BottomTabs from "./src/screens/BottomTabs";
 import SplashScreen from "./src/screens/SplashScreen";
+import Profile from "./src/screens/Profile";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -97,6 +98,11 @@ export default function App(): React.JSX.Element | null {
               name="BottomTabs"
               component={BottomTabs}
               options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={Profile}
+              options={{ headerBackButtonDisplayMode: "minimal" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

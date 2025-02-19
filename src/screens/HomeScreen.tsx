@@ -1,8 +1,5 @@
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
-import { supabase } from "../utils/supabase";
-import { dispatch } from "../utils/navigation";
-import { useNavigation } from "@react-navigation/native";
 import { useDynamicHeader } from "../components/navigation/useDynamicHeader";
 import { ScrollView } from "react-native-gesture-handler";
 import Search from "../assets/icons/search.svg";
@@ -16,14 +13,7 @@ import MapPin from "../assets/icons/map-pin.svg";
 import Star from "../assets/icons/star_outline.svg";
 
 export default function HomeScreen(): React.JSX.Element {
-  const navigation = useNavigation();
   const { categories, meals, mealNearby, events, recommendations } = useData();
-
-  const handleLogout = async (): Promise<void> => {
-    const { error } = await supabase.auth.signOut();
-    if (error) console.error("Error logging out:", error);
-    dispatch(navigation, "Login");
-  };
 
   const getStyle = (i: number) => {
     return i === 0 ? { marginLeft: 24 } : { marginLeft: 0 };
