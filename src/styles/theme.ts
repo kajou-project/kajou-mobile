@@ -11,7 +11,7 @@ const theme = {
       700: "#CE0237",
       800: "#AC0535",
       900: "#930835",
-      950: "#530017",
+      950: "#530017"
     },
     secondary: {
       50: "#ECEEFF",
@@ -24,41 +24,41 @@ const theme = {
       700: "#4F2AD8",
       800: "#4025AE",
       900: "#372689",
-      950: "#221650",
+      950: "#221650"
     },
     gray: {
       label: "#D9D9D9",
       1: "#EEEEEE",
-      2: "#676767",
+      2: "#676767"
     },
-    white: "#F9F4F0",
+    white: "#F9F4F0"
   },
   title: {
     h1: {
       fontSize: 48,
-      fontWeight: "bold",
+      fontWeight: "bold"
     },
     h2: {
       fontSize: 36,
-      fontWeight: "regular",
+      fontWeight: "regular"
     },
     h3: {
       fontSize: 26,
-      fontWeight: "semibold",
+      fontWeight: "semibold"
     },
     h4: {
       fontSize: 16,
-      fontWeight: "regular",
+      fontWeight: "regular"
     },
     h5: {
       fontSize: 14,
-      fontWeight: "regular",
+      fontWeight: "regular"
     },
     h6: {
       fontSize: 12,
-      fontWeight: "regular",
-    },
-  },
+      fontWeight: "regular"
+    }
+  }
 };
 
 export default theme;

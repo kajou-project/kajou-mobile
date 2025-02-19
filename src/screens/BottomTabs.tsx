@@ -17,39 +17,62 @@ import Users from "../assets/icons/users.svg";
 import UsersBold from "../assets/icons/users-bold.svg";
 import Event from "../assets/icons/event.svg";
 import EventBold from "../assets/icons/event-bold.svg";
+import { DataProvider } from "../providers/DataProvider";
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabs(): React.JSX.Element {
   return (
     <LocationProvider>
-      <Tab.Navigator tabBar={props => Bottom(props)}>
-        <Tab.Screen name="Home" component={HomeScreen} initialParams={{
-          name: "Home",
-          icon: Home,
-          iconSelected: HomeBold,
-        }} />
-        <Tab.Screen name="Reservation" component={ReservationScreen} initialParams={{
-          name: "Réservation",
-          icon: Reservation,
-          iconSelected: ReservationBold,
-        }} />
-        <Tab.Screen name="Add" component={AddMealScreen} initialParams={{
-          name: "Ajouter",
-          icon: Plus,
-          iconSelected: PlusBold,
-        }} />
-        <Tab.Screen name="Community" component={CommunityScreen} initialParams={{
-          name: "Commu",
-          icon: Users,
-          iconSelected: UsersBold,
-        }} />
-        <Tab.Screen name="Events" component={EventsScreen} initialParams={{
-          name: "Événements",
-          icon: Event,
-          iconSelected: EventBold,
-        }} />
-      </Tab.Navigator>
+      <DataProvider>
+        <Tab.Navigator tabBar={(props) => Bottom(props)}>
+          <Tab.Screen
+            name="Home"
+            component={HomeScreen}
+            initialParams={{
+              name: "Home",
+              icon: Home,
+              iconSelected: HomeBold
+            }}
+          />
+          <Tab.Screen
+            name="Reservation"
+            component={ReservationScreen}
+            initialParams={{
+              name: "Réservation",
+              icon: Reservation,
+              iconSelected: ReservationBold
+            }}
+          />
+          <Tab.Screen
+            name="Add"
+            component={AddMealScreen}
+            initialParams={{
+              name: "Ajouter",
+              icon: Plus,
+              iconSelected: PlusBold
+            }}
+          />
+          <Tab.Screen
+            name="Community"
+            component={CommunityScreen}
+            initialParams={{
+              name: "Commu",
+              icon: Users,
+              iconSelected: UsersBold
+            }}
+          />
+          <Tab.Screen
+            name="Events"
+            component={EventsScreen}
+            initialParams={{
+              name: "Événements",
+              icon: Event,
+              iconSelected: EventBold
+            }}
+          />
+        </Tab.Navigator>
+      </DataProvider>
     </LocationProvider>
   );
 }
