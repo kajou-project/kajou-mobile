@@ -8,6 +8,7 @@ export function AuthProvider({ children }: React.PropsWithChildren): React.JSX.E
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
+  const [type, setType] = useState<"particulier" | "professionnel" | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   /** Fonction qui va charger/rafraîchir le profil depuis la table 'profiles' */
@@ -58,6 +59,18 @@ export function AuthProvider({ children }: React.PropsWithChildren): React.JSX.E
     }
   }
 
+  async function refresh(): Promise<void> {
+    await Promise.all([refreshProfile(), refreshCompany()]);
+
+    if (profile && !company) {
+      setType("particulier");
+    }
+
+    if (company && !profile) {
+      setType("professionnel");
+    }
+  }
+
   // Au montage, on récupère la session / user actuel
   useEffect(() => {
     let mounted = true;
@@ -73,18 +86,16 @@ export function AuthProvider({ children }: React.PropsWithChildren): React.JSX.E
       }
     });
 
-    const { data: subscription } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setUser(session?.user ?? null);
+    const { data: subscription } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      setUser(session?.user ?? null);
 
-        if (session?.user) {
-          await Promise.all([refreshProfile(), refreshCompany()]);
-        } else {
-          setProfile(null);
-          setCompany(null);
-        }
-      },
-    );
+      if (session?.user) {
+        await refresh();
+      } else {
+        setProfile(null);
+        setCompany(null);
+      }
+    });
 
     return () => {
       mounted = false;
@@ -94,8 +105,7 @@ export function AuthProvider({ children }: React.PropsWithChildren): React.JSX.E
 
   useEffect(() => {
     if (user) {
-      refreshProfile();
-      refreshCompany();
+      refresh();
     }
   }, [user]);
 
@@ -103,8 +113,9 @@ export function AuthProvider({ children }: React.PropsWithChildren): React.JSX.E
     user,
     profile,
     company,
+    type,
     loading,
-    refreshProfile,
+    refreshProfile
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

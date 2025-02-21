@@ -13,13 +13,21 @@ export interface CompanySignUp {
 }
 
 export interface Profile {
+  id: number;
   firstname: string;
   lastname: string;
   phone: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Company {
+  id: number;
   name: string;
   siret: number;
   phone: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
 }

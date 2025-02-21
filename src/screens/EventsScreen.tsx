@@ -1,7 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useDynamicHeader } from "../components/navigation/useDynamicHeader";
 
 export default function EventsScreen(): React.JSX.Element {
+  useDynamicHeader();
+
   return (
     <View style={styles.container}>
       <Text>Événements</Text>

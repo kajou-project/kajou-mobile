@@ -6,6 +6,7 @@ export interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   company: Company | null;
+  type: "particulier" | "professionnel" | null;
   loading: boolean;
   refreshProfile: () => void;
 }
@@ -15,6 +16,7 @@ const AuthContext = createContext({
   user: null,
   profile: null,
   company: null,
+  type: null,
   loading: true,
   refreshProfile: () => {}
 } as AuthContextType);

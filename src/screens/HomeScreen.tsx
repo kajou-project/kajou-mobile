@@ -15,7 +15,7 @@ import Star from "../assets/icons/star_outline.svg";
 export default function HomeScreen(): React.JSX.Element {
   const { categories, meals, mealNearby, events, recommendations } = useData();
 
-  const getStyle = (i: number) => {
+  const getStyle = (i: number): Object => {
     return i === 0 ? { marginLeft: 24 } : { marginLeft: 0 };
   };
 
@@ -119,9 +119,9 @@ export default function HomeScreen(): React.JSX.Element {
                   <View style={{ ...styles.inlineCenter, gap: 4 }}>
                     <Clock width={20} height={20} />
                     <Text style={{ fontSize: 12, color: "#fff" }}>{mealNearby.hour}</Text>
-                    <View style={styles.separator}></View>
+                    {/* <View style={styles.separator}></View>
                     <MapPin width={20} height={20} />
-                    <Text style={{ fontSize: 12, color: "#fff" }}>{mealNearby.distance}m</Text>
+                    <Text style={{ fontSize: 12, color: "#fff" }}>{mealNearby.distance}m</Text> */}
                   </View>
 
                   <View style={{ ...styles.inlineCenter, gap: 4 }}>

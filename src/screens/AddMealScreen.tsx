@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import {
+  Alert,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -32,7 +33,7 @@ import { dispatch } from "../utils/navigation";
 
 export default function AddMealScreen(): React.JSX.Element {
   const navigation = useNavigation();
-  const { user } = useAuth();
+  const { user, type } = useAuth();
 
   const [image, setImage] = useState<string | null>(null);
   const [title, setTitle] = useState<string>("");
@@ -113,7 +114,7 @@ export default function AddMealScreen(): React.JSX.Element {
       return;
     }
 
-    const file = await uploadFile();
+    const file = await uploadFile(type === "particulier" ? "meal_posts" : "event_posts");
 
     if (!file) {
       return;
@@ -121,9 +122,30 @@ export default function AddMealScreen(): React.JSX.Element {
 
     const formatedDate = new Date(`${format(date, "yyyy-MM-dd")}T${format(time, "HH:mm")}`);
 
-    const { data, error } = await supabase
-      .from("meals")
-      .insert([
+    if (type === "particulier") {
+      const { data, error } = await supabase
+        .from("meals")
+        .insert([
+          {
+            title,
+            description,
+            date: formatedDate,
+            nb_guests: guests,
+            address,
+            image: file,
+            user_id: user.id
+          }
+        ])
+        .select();
+
+      if (error || !data) {
+        Alert.alert("Erreur", "Une erreur est survenue lors de la création du repas");
+        return;
+      }
+
+      addMealFoods(data[0].id);
+    } else {
+      const { error } = await supabase.from("events").insert([
         {
           title,
           description,
@@ -131,17 +153,17 @@ export default function AddMealScreen(): React.JSX.Element {
           nb_guests: guests,
           address,
           image: file,
+          key_words: foods.join(","),
           user_id: user.id
         }
-      ])
-      .select();
+      ]);
 
-    if (error || !data) {
-      console.error("Error creating meal:", error);
-      return;
+      if (error) {
+        console.error("Event error: ", error);
+        Alert.alert("Erreur", "Une erreur est survenue lors de la création de l'événement");
+        return
+      }
     }
-
-    addMealFoods(data[0].id);
 
     // Clear the form
     setImage(null);
@@ -163,7 +185,7 @@ export default function AddMealScreen(): React.JSX.Element {
    * Upload the file to Supabase
    * @returns
    */
-  async function uploadFile(): Promise<string | null> {
+  async function uploadFile(bucket: string): Promise<string | null> {
     if (!image) {
       return null;
     }
@@ -193,7 +215,7 @@ export default function AddMealScreen(): React.JSX.Element {
       buffer[i] = binary.charCodeAt(i);
     }
 
-    const { data, error } = await supabase.storage.from("meal_posts").upload(filePath, buffer, {
+    const { data, error } = await supabase.storage.from(bucket).upload(filePath, buffer, {
       contentType: typeImage(fileType),
       cacheControl: "3600",
       upsert: false
@@ -220,7 +242,7 @@ export default function AddMealScreen(): React.JSX.Element {
     ]);
 
     if (error) {
-      console.error("Error adding meal foods:", error);
+      Alert.alert("Erreur", "Une erreur est survenue lors de l'ajout des aliments");
     }
   }
 
@@ -264,8 +286,8 @@ export default function AddMealScreen(): React.JSX.Element {
 
           <View style={{ padding: 24 }}>
             <Input
-              label="Le nom du repas"
-              placeholder="ex: Pizza"
+              label={`Le nom ${type === "particulier" ? "du repas" : "de l'événement"}`}
+              placeholder={type === "particulier" ? "ex: Pizza" : "ex: Soirée méxicaine"}
               style={{ marginBottom: 24 }}
               onChangeText={setTitle}
             />
@@ -295,7 +317,11 @@ export default function AddMealScreen(): React.JSX.Element {
 
             <Input
               label="Description"
-              placeholder="ex: Pizza 4 fromages"
+              placeholder={
+                type === "particulier"
+                  ? "ex: Pizza 4 fromages"
+                  : "Ex: Soirée méxicaine avec des maracas"
+              }
               style={{ marginBottom: 24 }}
               onChangeText={setDescription}
             />
@@ -323,8 +349,8 @@ export default function AddMealScreen(): React.JSX.Element {
             <View style={{ ...styles.inline, marginBottom: 16 }}>
               <Input
                 value={food}
-                label="Les aliments"
-                placeholder="ex: Pomme"
+                label={type === "particulier" ? "Les aliments" : "Mots clés"}
+                placeholder={type === "particulier" ? "ex: Pomme" : "ex: Musique"}
                 containerStyle={{ flex: 1 }}
                 onChangeText={setFood}
               />
@@ -346,7 +372,11 @@ export default function AddMealScreen(): React.JSX.Element {
               ))}
             </View>
 
-            <Button type="primary" label="Enregristrez le repas" onPress={submit} />
+            <Button
+              type="primary"
+              label={`Enregristrez ${type === "particulier" ? "le repas" : "l'événement"}`}
+              onPress={submit}
+            />
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
