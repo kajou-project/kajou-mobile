@@ -105,7 +105,7 @@ export default function MealScreen({ route }: { route: any }): React.JSX.Element
           </View>
 
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            <Text style={{ fontSize: 16, fontWeight: "bold" }}>0/{meal.nb_guests}</Text>
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>{meal.reservations.length}/{meal.nb_guests}</Text>
             <Users />
           </View>
         </View>
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   foodsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 16,
+    gap: 8,
     marginBottom: 24
   },
   foodItem: {

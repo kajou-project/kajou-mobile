@@ -180,7 +180,7 @@ export default function HomeScreen(): React.JSX.Element {
 
       {/* À proximité */}
       {mealNearby && (
-        <View>
+        <Pressable onPress={() => navigate(navigation, "Meal", { meal: mealNearby, categories })}>
           <Text style={styles.title}>À proximité</Text>
 
           <View style={styles.mealNearby}>
@@ -233,7 +233,7 @@ export default function HomeScreen(): React.JSX.Element {
               </View>
             </View>
           </View>
-        </View>
+        </Pressable>
       )}
 
       {/* Événements */}
