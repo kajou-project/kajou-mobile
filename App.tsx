@@ -13,6 +13,9 @@ import BottomTabs from "./src/screens/BottomTabs";
 import SplashScreen from "./src/screens/SplashScreen";
 import Profile from "./src/screens/Profile";
 import BeforeSignUp from "./src/screens/BeforeSignUp";
+import MealScreen from "./src/screens/MealScreen";
+import SummuryScreen from "./src/screens/SummuryScreen";
+import PaymentScreen from "./src/screens/PaymentScreen";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -93,7 +96,11 @@ export default function App(): React.JSX.Element | null {
       <SafeAreaProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName={isAuthenticated ? "BottomTabs" : "BeforeSignUp"}>
-            <Stack.Screen name="BeforeSignUp" component={BeforeSignUp} options={{ headerShown: false }} />
+            <Stack.Screen
+              name="BeforeSignUp"
+              component={BeforeSignUp}
+              options={{ headerShown: false }}
+            />
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
             <Stack.Screen
@@ -101,6 +108,9 @@ export default function App(): React.JSX.Element | null {
               component={BottomTabs}
               options={{ headerShown: false }}
             />
+            <Stack.Screen name="Meal" component={MealScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Summury" component={SummuryScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Payment" component={PaymentScreen} options={{ headerShown: false }} />
             <Stack.Screen
               name="Profile"
               component={Profile}

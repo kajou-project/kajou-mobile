@@ -19,3 +19,8 @@ export function dispatch(
   const home = CommonActions.reset({ index, routes: [{ name, params }] });
   navigation.dispatch(home);
 }
+
+export function navigate(navigation: Navigation, name: string, params?: Object): void {
+  // @ts-ignore
+  navigation.navigate(name, params);
+}

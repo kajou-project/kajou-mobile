@@ -6,7 +6,8 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 interface InputProps extends TextInputProps {
   label: string;
-  type: "date" | "time" | "datetime";
+  type: "date" | "time" | "datetime" | "custom";
+  format?: string;
   onChangeDate?: Function;
   containerStyle?: object;
 }
@@ -24,7 +25,7 @@ export default function InputDate(props: InputProps): React.JSX.Element {
     setDate(date);
 
     if (rest.onChangeDate) {
-      rest.onChangeDate(date);
+      rest.onChangeDate(format(date, returnFormat()));
     }
 
     hideDatePicker();
@@ -38,6 +39,21 @@ export default function InputDate(props: InputProps): React.JSX.Element {
         return "HH:mm";
       case "datetime":
         return "dd/MM/yyyy HH:mm";
+      case "custom":
+        return rest.format || "dd/MM/yyyy";
+    }
+  };
+
+  const returnFormat = (): string => {
+    switch (rest.type) {
+      case "date":
+        return "yyyy-MM-dd";
+      case "time":
+        return "HH:mm:ss";
+      case "datetime":
+        return "yyyy-MM-dd HH:mm:ss";
+      case "custom":
+        return rest.format || "yyyy-MM-dd";
     }
   };
 
@@ -53,7 +69,7 @@ export default function InputDate(props: InputProps): React.JSX.Element {
 
       <DateTimePickerModal
         isVisible={open}
-        mode={rest.type}
+        mode={rest.type === "custom" ? "date" : rest.type}
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
       />

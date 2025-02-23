@@ -5,6 +5,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -30,23 +31,28 @@ import { format } from "date-fns";
 import * as FileSystem from "expo-file-system";
 import { useNavigation } from "@react-navigation/native";
 import { dispatch } from "../utils/navigation";
+import { Category, useData } from "../contexts/DataContext";
 
 export default function AddMealScreen(): React.JSX.Element {
   const navigation = useNavigation();
   const { user, type } = useAuth();
+  const { categories } = useData();
 
   const [image, setImage] = useState<string | null>(null);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [date, setDate] = useState<string>("");
-  const [time, setTime] = useState<string>("");
+  const [date, setDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
+  const [time, setTime] = useState<string>(format(new Date(), "HH:mm"));
   const [guests, setGuests] = useState<number>(1);
+  const [price, setPrice] = useState<string>("");
 
   const [food, setFood] = useState<string>("");
   const [foods, setFoods] = useState<string[]>([]);
 
   const [address, setAddress] = useState<string>("");
   const [addresses, setAddresses] = useState<string[]>([]);
+
+  const [category, setCategory] = useState<string>("");
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -117,10 +123,11 @@ export default function AddMealScreen(): React.JSX.Element {
     const file = await uploadFile(type === "particulier" ? "meal_posts" : "event_posts");
 
     if (!file) {
+      Alert.alert("Erreur", "Une erreur est survenue lors de l'envoi de l'image");
       return;
     }
 
-    const formatedDate = new Date(`${format(date, "yyyy-MM-dd")}T${format(time, "HH:mm")}`);
+    const formatedDate = new Date(`${date}T${time}`);
 
     if (type === "particulier") {
       const { data, error } = await supabase
@@ -131,8 +138,11 @@ export default function AddMealScreen(): React.JSX.Element {
             description,
             date: formatedDate,
             nb_guests: guests,
+            price: price ? +parseFloat(price.replace(",", ".")).toFixed(2) : null,
             address,
             image: file,
+            foods: foods.join(","),
+            category: category ?? null,
             user_id: user.id
           }
         ])
@@ -142,8 +152,6 @@ export default function AddMealScreen(): React.JSX.Element {
         Alert.alert("Erreur", "Une erreur est survenue lors de la création du repas");
         return;
       }
-
-      addMealFoods(data[0].id);
     } else {
       const { error } = await supabase.from("events").insert([
         {
@@ -151,6 +159,7 @@ export default function AddMealScreen(): React.JSX.Element {
           description,
           date: formatedDate,
           nb_guests: guests,
+          price: price ? +parseFloat(price.replace(",", ".")).toFixed(2) : null,
           address,
           image: file,
           key_words: foods.join(","),
@@ -161,7 +170,7 @@ export default function AddMealScreen(): React.JSX.Element {
       if (error) {
         console.error("Event error: ", error);
         Alert.alert("Erreur", "Une erreur est survenue lors de la création de l'événement");
-        return
+        return;
       }
     }
 
@@ -198,8 +207,8 @@ export default function AddMealScreen(): React.JSX.Element {
     }
 
     // Définir le chemin de stockage sur Supabase
-    const fileName = image.split("/").pop(); // Récupérer le nom du fichier
-    // const filePath = `public/${fileName}`;
+    const uniqueId = new Date().getTime();
+    const fileName = `${uniqueId}_${image.split("/").pop()}`; // Récupérer le nom du fichier
     const filePath = `public/${user!.id}/${fileName}`;
     const fileType = fileName!.split(".").pop(); // Récupérer l'extension du fichier
 
@@ -230,23 +239,6 @@ export default function AddMealScreen(): React.JSX.Element {
   }
 
   /**
-   * Add meal foods
-   * @param {number} mealId - The meal ID
-   */
-  async function addMealFoods(mealId: number): Promise<void> {
-    const { error } = await supabase.from("meal_foods").insert([
-      ...foods.map((food) => ({
-        meal_id: mealId,
-        name: food
-      }))
-    ]);
-
-    if (error) {
-      Alert.alert("Erreur", "Une erreur est survenue lors de l'ajout des aliments");
-    }
-  }
-
-  /**
    * Get the image type
    * @param {string} ext - The image extension
    * @returns
@@ -263,6 +255,14 @@ export default function AddMealScreen(): React.JSX.Element {
         return "image/jpeg";
     }
   };
+
+  function selectCategory(c: Category): void {
+    if (category === c.name) {
+      setCategory("");
+    } else {
+      setCategory(c.name);
+    }
+  }
 
   useDynamicHeader();
 
@@ -292,6 +292,35 @@ export default function AddMealScreen(): React.JSX.Element {
               onChangeText={setTitle}
             />
 
+            {/* Catégories */}
+            {type === "particulier" && (
+              <View style={styles.categories}>
+                {categories.map((c) => {
+                  return (
+                    <Pressable
+                      key={c.name}
+                      style={styles.category}
+                      onPress={() => selectCategory(c)}
+                    >
+                      <View
+                        style={category === c.name ? styles.categorySelected : styles.categoryIcon}
+                      >
+                        {category === c.name ? (
+                          <c.iconSelected width={30} height={30} />
+                        ) : (
+                          <c.icon width={30} height={30} />
+                        )}
+                      </View>
+
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={styles.categoryText}>{c.name}</Text>
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            )}
+
             <View style={styles.inline}>
               <InputDate
                 label="Date"
@@ -307,13 +336,20 @@ export default function AddMealScreen(): React.JSX.Element {
               />
             </View>
 
-            <Text style={{ marginBottom: 12 }}>Nombre de personne</Text>
-            <NumberSelect
-              type="primary"
-              min={1}
-              style={{ marginBottom: 24 }}
-              onChangeNumber={setGuests}
-            />
+            <View style={[styles.inline, { alignItems: "flex-start" }]}>
+              <View>
+                <Text style={{ marginBottom: 12 }}>Nombre de personne</Text>
+                <NumberSelect type="primary" min={1} onChangeNumber={setGuests} />
+              </View>
+
+              <Input
+                label="Prix par personne"
+                keyboardType="decimal-pad"
+                placeholder="7€"
+                containerStyle={{ flex: 1 }}
+                onChangeText={setPrice}
+              />
+            </View>
 
             <Input
               label="Description"
@@ -346,7 +382,7 @@ export default function AddMealScreen(): React.JSX.Element {
               ))}
             </View>
 
-            <View style={{ ...styles.inline, marginBottom: 16 }}>
+            <View style={{ ...styles.inline, alignItems: "flex-end", marginBottom: 16 }}>
               <Input
                 value={food}
                 label={type === "particulier" ? "Les aliments" : "Mots clés"}
@@ -403,7 +439,6 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "flex-end",
     gap: 16,
     marginBottom: 24
   },
@@ -431,5 +466,35 @@ const styles = StyleSheet.create({
   },
   foodItemText: {
     color: theme.colors.secondary[800]
+  },
+  categories: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+    gap: 8
+  },
+  category: {
+    alignItems: "center"
+  },
+  categorySelected: {
+    borderRadius: 10,
+    backgroundColor: theme.colors.secondary[500],
+    padding: 16,
+    aspectRatio: 1 / 1,
+    width: 60,
+    marginBottom: 6
+  },
+  categoryIcon: {
+    borderRadius: 10,
+    backgroundColor: theme.colors.secondary[100],
+    padding: 16,
+    aspectRatio: 1 / 1,
+    width: 60,
+    marginBottom: 6
+  },
+  categoryText: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 12
   }
 });

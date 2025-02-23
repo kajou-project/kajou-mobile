@@ -29,6 +29,10 @@ export function AuthProvider({ children }: React.PropsWithChildren): React.JSX.E
         console.error("Erreur refreshProfile:", error);
       }
 
+      if (data) {
+        setType("particulier");
+      }
+
       setProfile(data);
     } catch (err) {
       console.error("Erreur inconnue:", err);
@@ -53,6 +57,10 @@ export function AuthProvider({ children }: React.PropsWithChildren): React.JSX.E
         console.error("Erreur refreshCompany:", error);
       }
 
+      if (data) {
+        setType("professionnel");
+      }
+
       setCompany(data);
     } catch (err) {
       console.error("Erreur inconnue:", err);
@@ -61,14 +69,6 @@ export function AuthProvider({ children }: React.PropsWithChildren): React.JSX.E
 
   async function refresh(): Promise<void> {
     await Promise.all([refreshProfile(), refreshCompany()]);
-
-    if (profile && !company) {
-      setType("particulier");
-    }
-
-    if (company && !profile) {
-      setType("professionnel");
-    }
   }
 
   // Au montage, on récupère la session / user actuel
@@ -82,7 +82,6 @@ export function AuthProvider({ children }: React.PropsWithChildren): React.JSX.E
 
       if (mounted) {
         setUser(data?.session?.user ?? null);
-        setLoading(false);
       }
     });
 
@@ -96,6 +95,8 @@ export function AuthProvider({ children }: React.PropsWithChildren): React.JSX.E
         setCompany(null);
       }
     });
+
+    setLoading(false);
 
     return () => {
       mounted = false;
