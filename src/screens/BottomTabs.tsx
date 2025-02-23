@@ -3,7 +3,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "./HomeScreen";
 import AddMealScreen from "./AddMealScreen";
 import { LocationProvider } from "../providers/LocationProvider";
-import ReservationScreen from "./ReservationScreen";
 import CommunityScreen from "./CommunityScreen";
 import EventsScreen from "./EventsScreen";
 import Bottom from "../components/navigation/Bottom";
@@ -18,6 +17,7 @@ import UsersBold from "../assets/icons/users-bold.svg";
 import Event from "../assets/icons/event.svg";
 import EventBold from "../assets/icons/event-bold.svg";
 import { DataProvider } from "../providers/DataProvider";
+import ReservationsScreen from "./ReservationsScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -36,10 +36,10 @@ export default function BottomTabs(): React.JSX.Element {
             }}
           />
           <Tab.Screen
-            name="Reservation"
-            component={ReservationScreen}
+            name="Reservations"
+            component={ReservationsScreen}
             initialParams={{
-              name: "Réservation",
+              name: "Réservations",
               icon: Reservation,
               iconSelected: ReservationBold
             }}

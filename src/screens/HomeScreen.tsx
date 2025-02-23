@@ -18,6 +18,7 @@ import { Meal } from "../interfaces/Meals.interface";
 import { useNavigation } from "@react-navigation/native";
 import { navigate } from "../utils/navigation";
 import { useLocation } from "../contexts/LocationContext";
+import Calendar from "../assets/icons/calendar-days-white.svg";
 
 export default function HomeScreen(): React.JSX.Element {
   const navigation = useNavigation();
@@ -57,10 +58,23 @@ export default function HomeScreen(): React.JSX.Element {
 
   async function fetchMeals(): Promise<void> {
     // Repas dans le futur
-    const { data } = await supabase.from("meals").select(`
-      *,
-      reservations: reservations(*)
-      `).gt("date", new Date().toISOString());
+    const { data } = await supabase
+      .from("meals")
+      .select(`*, reservations: reservations(*)`)
+      .gt("date", new Date().toISOString());
+
+    if (data) {
+      setFullMeals(data);
+    }
+  }
+
+  async function fetchMealsByCategory(categoryName: string): Promise<void> {
+    // Repas dans le futur
+    const { data } = await supabase
+      .from("meals")
+      .select(`*, reservations: reservations(*)`)
+      .eq("category", categoryName)
+      .gt("date", new Date().toISOString());
 
     if (data) {
       setFullMeals(data);
@@ -101,6 +115,8 @@ export default function HomeScreen(): React.JSX.Element {
     if (find) {
       setMealNearby(find);
       tmp.splice(tmp.indexOf(find), 1);
+    } else {
+      setMealNearby(null);
     }
 
     setMeals(tmp);
@@ -113,8 +129,10 @@ export default function HomeScreen(): React.JSX.Element {
   function selectCategory(c: Category): void {
     if (category === c.name) {
       setCategory("");
+      fetchMeals();
     } else {
       setCategory(c.name);
+      fetchMealsByCategory(c.name);
     }
   }
 
@@ -123,11 +141,11 @@ export default function HomeScreen(): React.JSX.Element {
   return (
     <ScrollView style={styles.container}>
       {/* Seach Bar */}
-      <View style={styles.searchBar}>
+      {/* <View style={styles.searchBar}>
         <Text style={styles.searchBarText}>Recherchez votre futur Kajou</Text>
 
         <Search width={20} height={20} />
-      </View>
+      </View> */}
 
       {/* Catégories */}
       <View style={styles.categories}>
@@ -150,40 +168,51 @@ export default function HomeScreen(): React.JSX.Element {
         })}
       </View>
 
+      {meals.length === 0 && !mealNearby && !!category && (
+        <Text style={{ fontSize: 16, textAlign: "center" }}>Aucun repas trouvé</Text>
+      )}
+
       {/* À venir */}
-      <Text style={styles.title}>À venir</Text>
+      {meals.length > 0 && (
+        <View>
+          <Text style={styles.title}>À venir</Text>
 
-      <ScrollView horizontal={true} style={styles.scrollView}>
-        {meals.map((m, i) => {
-          return (
-            <Pressable
-              key={m.title}
-              style={{ ...styles.meal, ...getStyle(i) }}
-              onPress={() => navigate(navigation, "Meal", { meal: m, categories })}
-            >
-              <Image source={{ uri: m.image }} style={styles.image} />
+          <ScrollView horizontal={true} style={styles.scrollView}>
+            {meals.map((m, i) => {
+              return (
+                <Pressable
+                  key={m.title}
+                  style={{ ...styles.meal, ...getStyle(i) }}
+                  onPress={() => navigate(navigation, "Meal", { meal: m, categories })}
+                >
+                  <Image source={{ uri: m.image }} style={styles.image} />
 
-              <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                <Text style={styles.mealTitle}>{m.title}</Text>
-                {/* <Heart width={16} height={16} /> */}
-              </View>
+                  <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                    <Text style={styles.mealTitle}>{m.title}</Text>
+                    {/* <Heart width={16} height={16} /> */}
+                  </View>
 
-              <View style={{ ...styles.inlineCenter, gap: 4 }}>
-                <Text style={{ fontWeight: "bold" }}>{m.price}€</Text>
-                <View style={styles.mealRound}></View>
-                <Text>Chez {m.owner.firstname}</Text>
-              </View>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+                  <View style={{ ...styles.inlineCenter, gap: 4 }}>
+                    <Text style={{ fontWeight: "bold" }}>{m.price}€</Text>
+                    <View style={styles.mealRound}></View>
+                    <Text>Chez {m.owner.firstname}</Text>
+                  </View>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
 
       {/* À proximité */}
       {mealNearby && (
-        <Pressable onPress={() => navigate(navigation, "Meal", { meal: mealNearby, categories })}>
+        <View>
           <Text style={styles.title}>À proximité</Text>
 
-          <View style={styles.mealNearby}>
+          <Pressable
+            style={styles.mealNearby}
+            onPress={() => navigate(navigation, "Meal", { meal: mealNearby, categories })}
+          >
             {/* Top Image */}
             <View style={{ position: "relative", marginBottom: -14 }}>
               <Image source={{ uri: mealNearby.image }} style={styles.mealNearbyImg} />
@@ -208,7 +237,9 @@ export default function HomeScreen(): React.JSX.Element {
                   <Text style={{ fontWeight: "bold", fontSize: 16, color: "#fff" }}>
                     {mealNearby.title}
                   </Text>
-                  <Text style={{ fontSize: 16, color: "#fff" }}>chez {mealNearby.owner.firstname}</Text>
+                  <Text style={{ fontSize: 16, color: "#fff" }}>
+                    chez {mealNearby.owner.firstname}
+                  </Text>
 
                   {/* <View style={{ ...styles.inlineCenter, marginLeft: 8 }}>
                     <Text style={{ color: "#fff", fontWeight: 600 }}>{mealNearby.rating}</Text>
@@ -218,22 +249,31 @@ export default function HomeScreen(): React.JSX.Element {
 
                 <View style={{ ...styles.inlineCenter, justifyContent: "space-between" }}>
                   <View style={{ ...styles.inlineCenter, gap: 4 }}>
+                    <Calendar width={20} height={20} />
+                    <Text style={{ fontSize: 12, color: "#fff", marginRight: 4 }}>
+                      {format(mealNearby.date, "dd/MM")}
+                    </Text>
+
                     <Clock width={20} height={20} />
-                    <Text style={{ fontSize: 12, color: "#fff" }}>{format(mealNearby.date, "HH'h'mm")}</Text>
+                    <Text style={{ fontSize: 12, color: "#fff" }}>
+                      {format(mealNearby.date, "HH'h'mm")}
+                    </Text>
                     {/* <View style={styles.separator}></View>
                     <MapPin width={20} height={20} />
                     <Text style={{ fontSize: 12, color: "#fff" }}>{mealNearby.distance}m</Text> */}
                   </View>
 
                   <View style={{ ...styles.inlineCenter, gap: 4 }}>
-                    <Text style={{ fontWeight: 600, color: "#fff" }}>{mealNearby.reservations.length}/{mealNearby.nb_guests}</Text>
+                    <Text style={{ fontWeight: 600, color: "#fff" }}>
+                      {mealNearby.reservations.length}/{mealNearby.nb_guests}
+                    </Text>
                     <Users width={20} height={20} />
                   </View>
                 </View>
               </View>
             </View>
-          </View>
-        </Pressable>
+          </Pressable>
+        </View>
       )}
 
       {/* Événements */}
@@ -388,7 +428,7 @@ const styles = StyleSheet.create({
     left: 0,
     width: "100%",
     height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
     alignItems: "flex-end",
     justifyContent: "flex-end",
     paddingTop: 14,

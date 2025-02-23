@@ -95,27 +95,18 @@ export default function App(): React.JSX.Element | null {
     <AuthProvider>
       <SafeAreaProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={isAuthenticated ? "BottomTabs" : "BeforeSignUp"}>
-            <Stack.Screen
-              name="BeforeSignUp"
-              component={BeforeSignUp}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
-            <Stack.Screen
-              name="BottomTabs"
-              component={BottomTabs}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="Meal" component={MealScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="Summury" component={SummuryScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="Payment" component={PaymentScreen} options={{ headerShown: false }} />
-            <Stack.Screen
-              name="Profile"
-              component={Profile}
-              options={{ headerBackButtonDisplayMode: "minimal" }}
-            />
+          <Stack.Navigator
+            initialRouteName={isAuthenticated ? "BottomTabs" : "BeforeSignUp"}
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name="BeforeSignUp" component={BeforeSignUp} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} />
+            <Stack.Screen name="BottomTabs" component={BottomTabs} />
+            <Stack.Screen name="Meal" component={MealScreen} />
+            <Stack.Screen name="Summury" component={SummuryScreen} />
+            <Stack.Screen name="Payment" component={PaymentScreen} />
+            <Stack.Screen name="Profile" component={Profile} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>

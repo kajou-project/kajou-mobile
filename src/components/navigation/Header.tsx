@@ -3,6 +3,7 @@ import theme from "../../styles/theme";
 import Bell from "../../assets/icons/bell.svg";
 import MapPin from "../../assets/icons/map-pin.svg";
 import { useNavigation } from "@react-navigation/native";
+import User from "../../assets/icons/user.svg";
 
 interface Props {
   city: string | null;
@@ -32,7 +33,7 @@ export default function Header({ city }: Props): React.JSX.Element {
         </View>
 
         <Pressable style={styles.imgContainer} onPress={goToProfile()}>
-          {/* User Icon */}
+          <User width={28} height={28} />
         </Pressable>
       </View>
 
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 16,
     paddingTop: 50,
     paddingHorizontal: 24,
-    paddingBottom: 20,
+    paddingBottom: 20
   },
   title: {
     color: "white",

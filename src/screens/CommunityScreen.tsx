@@ -7,7 +7,7 @@ export default function CommunityScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <Text>À venir</Text>
+      <Text>Prochainement...</Text>
     </View>
   );
 }

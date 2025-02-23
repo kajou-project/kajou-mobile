@@ -1,3 +1,5 @@
+import { Meal } from "./Meals.interface";
+
 export interface Reservation {
   id: number;
   nb_people: number;
@@ -5,4 +7,6 @@ export interface Reservation {
   meal_id?: number;
   event_id?: number;
   created_at: string;
+  meal?: Meal;
+  event?: Event;
 }
