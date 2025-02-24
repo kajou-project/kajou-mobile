@@ -41,23 +41,8 @@ export default function MyMealsScreen(): React.JSX.Element {
     }
 
     if (data) {
-      setFullMeals(data);
+      setMeals(data);
     }
-  }
-
-  async function setFullMeals(data: Meal[]): Promise<void> {
-    const tmp = [];
-
-    // Récupérer les profils des utilisateurs
-    for (const m of data) {
-      const { data: image } = supabase.storage.from("meal_posts").getPublicUrl(m.image);
-
-      m.image = image.publicUrl;
-
-      tmp.push(m);
-    }
-
-    setMeals(tmp);
   }
 
   return (
@@ -93,7 +78,12 @@ export default function MyMealsScreen(): React.JSX.Element {
         >
           {/* Top Image */}
           <View style={{ position: "relative", marginBottom: -14 }}>
-            <Image source={{ uri: meal.image }} style={styles.mealImg} />
+            <Image
+              source={{
+                uri: supabase.storage.from("meal_posts").getPublicUrl(meal.image).data.publicUrl
+              }}
+              style={styles.mealImg}
+            />
 
             <View style={styles.opacity}>
               <Text style={{ fontSize: 16, color: "#fff" }}>{meal.price}€</Text>

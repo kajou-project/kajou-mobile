@@ -116,7 +116,7 @@ export function AuthProvider({ children }: React.PropsWithChildren): React.JSX.E
     company,
     type,
     loading,
-    refreshProfile
+    refresh
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

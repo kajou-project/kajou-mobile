@@ -131,7 +131,7 @@ export default function UpdateMealScreen({ route }: { route: any }): React.JSX.E
     const formatedDate = new Date(`${date}T${time}`);
 
     if (type === "particulier") {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("meals")
         .update([
           {
@@ -147,9 +147,10 @@ export default function UpdateMealScreen({ route }: { route: any }): React.JSX.E
             user_id: user.id
           }
         ])
-        .select();
+        .eq("id", meal.id)
+        .single();
 
-      if (error || !data) {
+      if (error) {
         Alert.alert("Erreur", "Une erreur est survenue lors de la création du repas");
         return;
       }
@@ -169,7 +170,6 @@ export default function UpdateMealScreen({ route }: { route: any }): React.JSX.E
       ]);
 
       if (error) {
-        console.error("Event error: ", error);
         Alert.alert("Erreur", "Une erreur est survenue lors de la création de l'événement");
         return;
       }

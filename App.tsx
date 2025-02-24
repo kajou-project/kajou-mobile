@@ -18,6 +18,7 @@ import SummuryScreen from "./src/screens/SummuryScreen";
 import PaymentScreen from "./src/screens/PaymentScreen";
 import MyMealsScreen from "./src/screens/MyMealsScreen";
 import UpdateMealScreen from "./src/screens/UpdateMealScreen";
+import UpdateProfileScreen from "./src/screens/UpdateProfileScreen";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -111,6 +112,7 @@ export default function App(): React.JSX.Element | null {
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name="MyMeals" component={MyMealsScreen} />
             <Stack.Screen name="UpdateMeal" component={UpdateMealScreen} />
+            <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>

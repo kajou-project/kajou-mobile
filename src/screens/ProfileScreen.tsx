@@ -45,7 +45,7 @@ export default function ProfileScreen(): React.JSX.Element {
       </View>
 
       {/* Compte */}
-      <View style={styles.accountCard}>
+      <Pressable style={styles.accountCard} onPress={() => navigate(navigation, "UpdateProfile")}>
         <View style={styles.imgContainer}>
           <User width={24} height={24} />
         </View>
@@ -53,7 +53,7 @@ export default function ProfileScreen(): React.JSX.Element {
         <Text style={styles.accountName}>{profile?.firstname ?? company?.name}</Text>
 
         <ArrowRight width={24} height={24} />
-      </View>
+      </Pressable>
 
       {/* Repas */}
       <Pressable style={styles.mealsCard} onPress={() => navigate(navigation, "MyMeals")}>

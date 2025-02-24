@@ -8,7 +8,7 @@ export interface AuthContextType {
   company: Company | null;
   type: "particulier" | "professionnel" | null;
   loading: boolean;
-  refreshProfile: () => void;
+  refresh: () => void;
 }
 
 // On définit la forme de nos données
@@ -18,7 +18,7 @@ const AuthContext = createContext({
   company: null,
   type: null,
   loading: true,
-  refreshProfile: () => {}
+  refresh: () => {}
 } as AuthContextType);
 
 export const useAuth = () => useContext(AuthContext);
