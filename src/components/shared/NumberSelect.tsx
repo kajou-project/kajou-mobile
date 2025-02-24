@@ -5,6 +5,7 @@ import Minus from "../../assets/icons/minus.svg";
 import theme from "../../styles/theme";
 
 interface NumberSelectProps {
+  value?: number;
   style?: object;
   min?: number;
   max?: number;
@@ -13,7 +14,7 @@ interface NumberSelectProps {
 }
 
 export default function NumberSelect(props: NumberSelectProps): React.JSX.Element {
-  const [number, setNumber] = useState<number>(1);
+  const [number, setNumber] = useState<number>(props.value ?? 1);
 
   const increase = () => {
     if (props.max && number >= props.max) {

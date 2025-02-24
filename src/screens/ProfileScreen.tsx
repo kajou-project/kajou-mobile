@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { supabase } from "../utils/supabase";
-import { dispatch } from "../utils/navigation";
+import { dispatch, navigate } from "../utils/navigation";
 import { useNavigation } from "@react-navigation/native";
 import Button from "../components/shared/Button";
 import ArrowLeft from "../assets/icons/chevron-left.svg";
@@ -10,8 +10,9 @@ import theme from "../styles/theme";
 import User from "../assets/icons/user.svg";
 import { useAuth } from "../contexts/AuthContext";
 import Kajou from "../assets/icons/resa-bold.svg";
+import { StatusBar } from "expo-status-bar";
 
-export default function Profile(): React.JSX.Element {
+export default function ProfileScreen(): React.JSX.Element {
   const navigation = useNavigation();
   const { profile, company } = useAuth();
 
@@ -23,6 +24,8 @@ export default function Profile(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="dark" />
+
       {/* Header */}
       <View
         style={{
@@ -53,11 +56,11 @@ export default function Profile(): React.JSX.Element {
       </View>
 
       {/* Repas */}
-      <View style={styles.mealsCard}>
+      <Pressable style={styles.mealsCard} onPress={() => navigate(navigation, "MyMeals")}>
         <Kajou width={48} height={48} />
         <Text style={styles.mealsText}>Vos repas</Text>
         <ArrowRightWhite width={24} height={24} />
-      </View>
+      </Pressable>
 
       <Button type="primary" label="Se déconnecter" onPress={handleLogout} />
     </View>

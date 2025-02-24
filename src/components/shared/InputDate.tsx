@@ -15,7 +15,7 @@ interface InputProps extends TextInputProps {
 export default function InputDate(props: InputProps): React.JSX.Element {
   const { style, ...rest } = props;
   const [open, setOpen] = useState<boolean>(false);
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date>(rest.value ? new Date(rest.value) : new Date());
 
   const hideDatePicker = (): void => {
     setOpen(false);

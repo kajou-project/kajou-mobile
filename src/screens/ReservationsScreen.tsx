@@ -1,7 +1,6 @@
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useDynamicHeader } from "../components/navigation/useDynamicHeader";
 import { supabase } from "../utils/supabase";
-import { Meal } from "../interfaces/Meals.interface";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { navigate } from "../utils/navigation";

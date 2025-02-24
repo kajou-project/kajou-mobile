@@ -11,11 +11,13 @@ import { LocaleConfig } from "react-native-calendars";
 import { AuthProvider } from "./src/providers/AuthProvider";
 import BottomTabs from "./src/screens/BottomTabs";
 import SplashScreen from "./src/screens/SplashScreen";
-import Profile from "./src/screens/Profile";
+import ProfileScreen from "./src/screens/ProfileScreen";
 import BeforeSignUp from "./src/screens/BeforeSignUp";
 import MealScreen from "./src/screens/MealScreen";
 import SummuryScreen from "./src/screens/SummuryScreen";
 import PaymentScreen from "./src/screens/PaymentScreen";
+import MyMealsScreen from "./src/screens/MyMealsScreen";
+import UpdateMealScreen from "./src/screens/UpdateMealScreen";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -106,7 +108,9 @@ export default function App(): React.JSX.Element | null {
             <Stack.Screen name="Meal" component={MealScreen} />
             <Stack.Screen name="Summury" component={SummuryScreen} />
             <Stack.Screen name="Payment" component={PaymentScreen} />
-            <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="MyMeals" component={MyMealsScreen} />
+            <Stack.Screen name="UpdateMeal" component={UpdateMealScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
