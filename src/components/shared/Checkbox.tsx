@@ -13,13 +13,8 @@ export default function Checkbox(props: CheckboxProps): React.JSX.Element {
   const { style, label, value, onChange } = props;
 
   return (
-    <Pressable
-      style={[styles.container, style]}
-      onPress={() => onChange(!value)}
-    >
-      <View style={styles.checkbox}>
-        {value && <Check style={styles.icon} />}
-      </View>
+    <Pressable style={[styles.container, style]} onPress={() => onChange(!value)}>
+      <View style={styles.checkbox}>{value && <Check style={styles.icon} />}</View>
 
       <Text style={styles.label}>{label}</Text>
     </Pressable>
@@ -29,7 +24,7 @@ export default function Checkbox(props: CheckboxProps): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "center"
   },
   checkbox: {
     width: 24,
@@ -37,11 +32,12 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.secondary[200],
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 2
   },
   icon: {
-    color: theme.colors.secondary[600],
+    color: theme.colors.secondary[600]
   },
   label: {
-    marginLeft: 8,
-  },
+    marginLeft: 8
+  }
 });

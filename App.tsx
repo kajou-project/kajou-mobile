@@ -19,6 +19,9 @@ import PaymentScreen from "./src/screens/PaymentScreen";
 import MyMealsScreen from "./src/screens/MyMealsScreen";
 import UpdateMealScreen from "./src/screens/UpdateMealScreen";
 import UpdateProfileScreen from "./src/screens/UpdateProfileScreen";
+import EventScreen from "./src/screens/EventScreen";
+import EventSummuryScreen from "./src/screens/EventSummuryScreen";
+import EventPaymentScreen from "./src/screens/EventPaymentScreen";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -109,6 +112,9 @@ export default function App(): React.JSX.Element | null {
             <Stack.Screen name="Meal" component={MealScreen} />
             <Stack.Screen name="Summury" component={SummuryScreen} />
             <Stack.Screen name="Payment" component={PaymentScreen} />
+            <Stack.Screen name="Event" component={EventScreen} />
+            <Stack.Screen name="EventSummury" component={EventSummuryScreen} />
+            <Stack.Screen name="EventPayment" component={EventPaymentScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name="MyMeals" component={MyMealsScreen} />
             <Stack.Screen name="UpdateMeal" component={UpdateMealScreen} />

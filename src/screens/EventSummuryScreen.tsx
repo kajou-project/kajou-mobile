@@ -14,11 +14,12 @@ import { format } from "date-fns";
 import Button from "../components/shared/Button";
 import { StatusBar } from "expo-status-bar";
 import { navigate } from "../utils/navigation";
+import { Event } from "../interfaces/Events.interface";
 
-export default function SummuryScreen({ route }: { route: any }): React.JSX.Element {
+export default function EventSummuryScreen({ route }: { route: any }): React.JSX.Element {
   const navigation = useNavigation();
-  const { meal, coordinate }: { meal: Meal; coordinate: any } = route.params;
-  const [total, setTotal] = useState<number>(meal.price);
+  const { event, coordinate }: { event: Event; coordinate: any } = route.params;
+  const [total, setTotal] = useState<number>(event.price);
   const [nbPeople, setNbPeople] = useState<number>(1);
   const [splitAddress, setSplitAddress] = useState<Record<string, string>>({
     street: "",
@@ -27,7 +28,7 @@ export default function SummuryScreen({ route }: { route: any }): React.JSX.Elem
 
   const handleIncrement = (nbPeople: number): void => {
     setNbPeople(nbPeople);
-    setTotal(meal.price * nbPeople);
+    setTotal(event.price * nbPeople);
   };
 
   const formatPhone = (phone: string): string => {
@@ -35,9 +36,9 @@ export default function SummuryScreen({ route }: { route: any }): React.JSX.Elem
   };
 
   useEffect(() => {
-    if (meal.address) {
+    if (event.address) {
       const regex = /(.*)\s(\d{5}\s.+)/; // Capture tout avant le code postal et tout après
-      const match = meal.address.match(regex);
+      const match = event.address.match(regex);
 
       if (match) {
         setSplitAddress({
@@ -45,7 +46,7 @@ export default function SummuryScreen({ route }: { route: any }): React.JSX.Elem
           city: match[2]
         });
       } else {
-        setSplitAddress({ street: meal.address, city: "" });
+        setSplitAddress({ street: event.address, city: "" });
       }
     }
   }, []);
@@ -63,6 +64,30 @@ export default function SummuryScreen({ route }: { route: any }): React.JSX.Elem
           <Text style={{ fontSize: 26, fontWeight: "bold" }}>Validez votre Kajou !</Text>
         </View>
 
+        {/* Card */}
+        <View style={styles.recommendation}>
+          <Image source={{ uri: event.image }} style={styles.recoImg} />
+
+          <View style={styles.recoContainer}>
+            <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 4 }}>{event.title}</Text>
+
+              <Text style={{ marginBottom: 8 }}>Chez {event.owner.name}</Text>
+
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <Text>Nombre de personne</Text>
+                <NumberSelect
+                  type="secondary"
+                  min={1}
+                  max={event.nb_guests - event.reservations.length}
+                  onChangeNumber={handleIncrement}
+                />
+              </View>
+          </View>
+        </View>
+
+        {/* Line */}
+        <View style={styles.line}></View>
+
         {/* Prix */}
         <View
           style={{
@@ -75,31 +100,6 @@ export default function SummuryScreen({ route }: { route: any }): React.JSX.Elem
           <Text style={{ fontSize: 26, fontWeight: 600 }}>Sous-total</Text>
           <Text style={{ fontSize: 26, fontWeight: "bold" }}>{total}€</Text>
         </View>
-
-        {/* Card */}
-        <View style={styles.recommendation}>
-          <Image source={{ uri: meal.image }} style={styles.recoImg} />
-
-          <View style={styles.recoContainer}>
-            <View style={{ flexDirection: "column", gap: 4 }}>
-              <Text style={{ fontSize: 16, fontWeight: "bold" }}>{meal.title}</Text>
-              <Text>Chez {meal.owner.firstname}</Text>
-            </View>
-
-            <View style={{ flexDirection: "column", alignItems: "center" }}>
-              <Text style={{ marginBottom: 12 }}>Nombre de personne</Text>
-              <NumberSelect
-                type="secondary"
-                min={1}
-                max={meal.nb_guests - meal.reservations.length}
-                onChangeNumber={handleIncrement}
-              />
-            </View>
-          </View>
-        </View>
-
-        {/* Line */}
-        <View style={styles.line}></View>
 
         {/* Map */}
         <MapView
@@ -130,9 +130,7 @@ export default function SummuryScreen({ route }: { route: any }): React.JSX.Elem
               <ArrowRight width={32} height={32} />
             </View>
 
-            <View
-              style={{ width: "100%", height: 1, backgroundColor: theme.colors.secondary[400] }}
-            ></View>
+            <View style={{ width: "100%", height: 1, backgroundColor: "#CCC" }}></View>
           </View>
         </View>
 
@@ -150,15 +148,13 @@ export default function SummuryScreen({ route }: { route: any }): React.JSX.Elem
               }}
             >
               <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                {formatPhone(meal.owner.phone)}
+                {formatPhone(event.owner.phone)}
               </Text>
 
               <ArrowRight width={32} height={32} />
             </View>
 
-            <View
-              style={{ width: "100%", height: 1, backgroundColor: theme.colors.secondary[400] }}
-            ></View>
+            <View style={{ width: "100%", height: 1, backgroundColor: "#CCC" }}></View>
           </View>
         </View>
 
@@ -177,21 +173,19 @@ export default function SummuryScreen({ route }: { route: any }): React.JSX.Elem
             >
               <Text style={{ fontSize: 16, fontWeight: "bold" }}>Heure</Text>
               <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                {format(new Date(meal.date), "HH'h'mm")}
+                {format(new Date(event.date), "HH'h'mm")}
               </Text>
             </View>
 
-            <View
-              style={{ width: "100%", height: 1, backgroundColor: theme.colors.secondary[400] }}
-            ></View>
+            <View style={{ width: "100%", height: 1, backgroundColor: "#CCC" }}></View>
           </View>
         </View>
 
         {/* Validation */}
         <Button
           type="primary"
-          label="Réservez votre Kajou"
-          onPress={() => navigate(navigation, "Payment", { meal, nbPeople, total })}
+          label="Réservez votre événement !"
+          onPress={() => navigate(navigation, "EventPayment", { event, nbPeople, total })}
         />
       </View>
     </SafeAreaView>
@@ -217,15 +211,13 @@ const styles = StyleSheet.create({
   },
   recoContainer: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: "column",
     paddingHorizontal: 16
   },
   line: {
     width: "100%",
     height: 1,
-    backgroundColor: theme.colors.secondary[400],
+    backgroundColor: "#000",
     marginTop: 16,
     marginBottom: 24
   },

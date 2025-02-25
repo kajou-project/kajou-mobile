@@ -1,3 +1,4 @@
+import { Event } from "./Events.interface";
 import { Meal } from "./Meals.interface";
 
 export interface Reservation {

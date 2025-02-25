@@ -12,6 +12,7 @@ import theme from "../styles/theme";
 import { useAuth } from "../contexts/AuthContext";
 import { Reservation } from "../interfaces/Reservations.interface";
 import Calendar from "../assets/icons/calendar-days-white.svg";
+import { Event } from "../interfaces/Events.interface";
 
 export default function ReservationsScreen({ route }: { route: any }): React.JSX.Element {
   const navigation = useNavigation();
@@ -32,11 +33,12 @@ export default function ReservationsScreen({ route }: { route: any }): React.JSX
     // Récupérer les réservations
     const { data } = await supabase
       .from("reservations")
-      .select(`*, meal:meal_id(*, reservations(id))`)
+      .select(`*, meal:meal_id(*, reservations(id)), event:event_id(*, reservations(id))`)
       .eq("user_id", user.id);
 
     if (data) {
       setFullMeals(data);
+      setFullEvents(data);
     }
   }
 
@@ -52,13 +54,14 @@ export default function ReservationsScreen({ route }: { route: any }): React.JSX
       const { data: profiles } = await supabase
         .from("profiles")
         .select("*")
-        .eq("user_id", r.meal.user_id);
+        .eq("user_id", r.meal.user_id)
+        .single();
       const { data: image } = supabase.storage.from("meal_posts").getPublicUrl(r.meal.image);
 
       r.meal.image = image.publicUrl;
 
       if (profiles) {
-        r.meal.owner = profiles[0];
+        r.meal.owner = profiles;
       }
 
       tmp.push(r);
@@ -66,6 +69,38 @@ export default function ReservationsScreen({ route }: { route: any }): React.JSX
 
     const future = tmp.filter((r) => new Date(r.meal!.date) > new Date());
     const past = tmp.filter((r) => new Date(r.meal!.date) < new Date());
+
+    setFuture(future);
+    setPast(past);
+  }
+
+  async function setFullEvents(data: Reservation[]): Promise<void> {
+    const tmp = [];
+
+    // Récupérer les profils des utilisateurs
+    for (const r of data) {
+      if (!r.event) {
+        continue;
+      }
+
+      const { data: companies } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("user_id", r.event.user_id)
+        .single();
+      const { data: image } = supabase.storage.from("event_posts").getPublicUrl(r.event.image);
+
+      r.event.image = image.publicUrl;
+
+      if (companies) {
+        r.event.owner = companies;
+      }
+
+      tmp.push(r);
+    }
+
+    const future = tmp.filter((r) => new Date(r.event!.date) > new Date());
+    const past = tmp.filter((r) => new Date(r.event!.date) < new Date());
 
     setFuture(future);
     setPast(past);
@@ -92,10 +127,12 @@ export default function ReservationsScreen({ route }: { route: any }): React.JSX
             >
               {/* Top Image */}
               <View style={{ position: "relative", marginBottom: -14 }}>
-                <Image source={{ uri: r.meal?.image }} style={styles.mealImg} />
+                <Image source={{ uri: r.meal?.image ?? r.event?.image }} style={styles.mealImg} />
 
                 <View style={styles.opacity}>
-                  <Text style={{ fontSize: 16, color: "#fff" }}>{r.meal?.price}€</Text>
+                  <Text style={{ fontSize: 16, color: "#fff" }}>
+                    {r.meal?.price ?? r.event?.price}€
+                  </Text>
                 </View>
               </View>
 
@@ -111,10 +148,10 @@ export default function ReservationsScreen({ route }: { route: any }): React.JSX
                 <View style={{ flex: 1, justifyContent: "space-between" }}>
                   <View style={{ ...styles.inlineCenter, gap: 4 }}>
                     <Text style={{ fontWeight: "bold", fontSize: 16, color: "#fff" }}>
-                      {r.meal?.title}
+                      {r.meal?.title ?? r.event?.title}
                     </Text>
                     <Text style={{ fontSize: 16, color: "#fff" }}>
-                      chez {r.meal?.owner.firstname}
+                      chez {r.meal?.owner.firstname ?? r.event?.owner.name}
                     </Text>
                   </View>
 
@@ -135,7 +172,7 @@ export default function ReservationsScreen({ route }: { route: any }): React.JSX
 
                     <View style={{ ...styles.inlineCenter, gap: 4 }}>
                       <Text style={{ fontWeight: 600, color: "#fff" }}>
-                        {r.meal?.reservations.length}/{r.meal?.nb_guests}
+                        {r.meal?.reservations?.length ?? r.event?.reservations?.length}/{r.meal?.nb_guests ?? r.event?.nb_guests}
                       </Text>
                       <Users width={20} height={20} />
                     </View>
@@ -158,10 +195,10 @@ export default function ReservationsScreen({ route }: { route: any }): React.JSX
             >
               {/* Top Image */}
               <View style={{ position: "relative", marginBottom: -14 }}>
-                <Image source={{ uri: r.meal?.image }} style={styles.mealImg} />
+                <Image source={{ uri: r.meal?.image ?? r.event?.image }} style={styles.mealImg} />
 
                 <View style={styles.opacity}>
-                  <Text style={{ fontSize: 16, color: "#fff" }}>{r.meal?.price}€</Text>
+                  <Text style={{ fontSize: 16, color: "#fff" }}>{r.meal?.price ?? r.event?.price}€</Text>
                 </View>
               </View>
 
@@ -175,12 +212,12 @@ export default function ReservationsScreen({ route }: { route: any }): React.JSX
                 </View>
 
                 <View style={{ flex: 1, justifyContent: "space-between" }}>
-                  <View style={{ ...styles.inlineCenter, gap: 4 }}>
-                    <Text style={{ fontWeight: "bold", fontSize: 16, color: "#fff" }}>
-                      {r.meal?.title}
+                  <View style={{ ...styles.inlineCenter, gap: 4, marginBottom: 8 }}>
+                    <Text style={{ fontWeight: "bold", fontSize: 16, color: "#fff", flex: 1 }}>
+                      {r.meal?.title ?? r.event?.title}
                     </Text>
                     <Text style={{ fontSize: 16, color: "#fff" }}>
-                      chez {r.meal?.owner.firstname}
+                      chez {r.meal?.owner.firstname ?? r.event?.owner.name}
                     </Text>
                   </View>
 
@@ -201,7 +238,7 @@ export default function ReservationsScreen({ route }: { route: any }): React.JSX
 
                     <View style={{ ...styles.inlineCenter, gap: 4 }}>
                       <Text style={{ fontWeight: 600, color: "#fff" }}>
-                        {r.meal?.reservations.length}/{r.meal?.nb_guests}
+                        {r.meal?.reservations?.length ?? r.event?.reservations?.length}/{r.meal?.nb_guests ?? r.event?.nb_guests}
                       </Text>
                       <Users width={20} height={20} />
                     </View>
@@ -260,14 +297,16 @@ const styles = StyleSheet.create({
     gap: 12
   },
   userImgContainer: {
+    width: 54,
+    height: 54,
     borderRadius: 50,
     overflow: "hidden",
     borderWidth: 3,
     borderColor: theme.colors.primary[800]
   },
   userImg: {
-    width: 50,
-    height: 50,
+    width: "100%",
+    height: "100%",
     resizeMode: "cover"
   },
   separator: {

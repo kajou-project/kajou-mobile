@@ -1,3 +1,6 @@
+import { Reservation } from "./Reservations.interface";
+import { Company } from "./User.interface";
+
 export interface Event {
   id: number;
   title: string;
@@ -11,4 +14,6 @@ export interface Event {
   created_at: string;
   updated_at: string | null;
   user_id: string;
+  owner: Company;
+  reservations: Reservation[];
 }

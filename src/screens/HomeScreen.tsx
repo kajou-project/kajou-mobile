@@ -36,24 +36,36 @@ export default function HomeScreen(): React.JSX.Element {
   }, [addresses]);
 
   async function fetchEvents(): Promise<void> {
-    const { data } = await supabase.from("events").select("*");
+    const { data } = await supabase.from("events").select(`*, reservations: reservations(*)`);
+    // .gt("date", new Date().toISOString());
 
     if (data) {
-      const tmp: Event[] = [];
+      setFullEvents(data);
+    }
+  }
 
-      for (const d of data) {
-        const { data: image } = supabase.storage.from("event_posts").getPublicUrl(d.image);
+  async function setFullEvents(data: Event[]): Promise<void> {
+    const tmp = [];
 
-        if (data) {
-          d.image = image.publicUrl;
-          ("Ewen");
-        }
+    // Récupérer les profils des utilisateurs
+    for (const e of data) {
+      const { data: companies } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("user_id", e.user_id)
+        .single();
+      const { data: image } = supabase.storage.from("event_posts").getPublicUrl(e.image);
 
-        tmp.push(d);
+      e.image = image.publicUrl;
+
+      if (companies) {
+        e.owner = companies;
       }
 
-      setEvents(tmp);
+      tmp.push(e);
     }
+
+    setEvents(tmp);
   }
 
   async function fetchMeals(): Promise<void> {
@@ -89,13 +101,14 @@ export default function HomeScreen(): React.JSX.Element {
       const { data: profiles } = await supabase
         .from("profiles")
         .select("*")
-        .eq("user_id", m.user_id);
+        .eq("user_id", m.user_id)
+        .single();
       const { data: image } = supabase.storage.from("meal_posts").getPublicUrl(m.image);
 
       m.image = image.publicUrl;
 
       if (profiles) {
-        m.owner = profiles[0];
+        m.owner = profiles;
       }
 
       tmp.push(m);
@@ -284,7 +297,11 @@ export default function HomeScreen(): React.JSX.Element {
           <View style={styles.events}>
             {events.map((e) => {
               return (
-                <View key={e.title} style={styles.event}>
+                <Pressable
+                  key={e.title}
+                  style={styles.event}
+                  onPress={() => navigate(navigation, "Event", { event: e })}
+                >
                   <Image source={{ uri: e.image }} style={styles.image} />
 
                   <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -299,7 +316,7 @@ export default function HomeScreen(): React.JSX.Element {
                     <View style={styles.mealRound}></View>
                     <Text>{format(e.date, "HH'h'mm")}</Text>
                   </View>
-                </View>
+                </Pressable>
               );
             })}
           </View>
