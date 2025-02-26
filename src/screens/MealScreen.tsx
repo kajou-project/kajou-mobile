@@ -73,13 +73,7 @@ export default function MealScreen({ route }: { route: any }): React.JSX.Element
                 />
               </View>
 
-              <View>
-                <Text style={styles.title}>{meal.title}</Text>
-
-                <TouchableOpacity>
-                  <Text style={styles.subTitle}>Voir le profil</Text>
-                </TouchableOpacity>
-              </View>
+              <Text style={styles.title}>{meal.title}</Text>
             </View>
           </SafeAreaView>
         </View>
@@ -105,7 +99,9 @@ export default function MealScreen({ route }: { route: any }): React.JSX.Element
           </View>
 
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            <Text style={{ fontSize: 16, fontWeight: "bold" }}>{meal.reservations.length}/{meal.nb_guests}</Text>
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+              {meal.reservations.length}/{meal.nb_guests}
+            </Text>
             <Users />
           </View>
         </View>
@@ -204,7 +200,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: theme.colors.white,
     fontWeight: "bold",
-    marginBottom: 8
   },
   subTitle: {
     color: theme.colors.white,
