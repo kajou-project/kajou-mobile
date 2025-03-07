@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -30,11 +30,15 @@ import { useAuth } from "../contexts/AuthContext";
 import { format } from "date-fns";
 import * as FileSystem from "expo-file-system";
 import { useNavigation } from "@react-navigation/native";
-import { dispatch } from "../utils/navigation";
+import { dispatch, navigate } from "../utils/navigation";
 import { Category, useData } from "../contexts/DataContext";
+import { useActionSheet } from "@expo/react-native-action-sheet";
+import { usePicture } from "../contexts/PictureContext";
 
 export default function AddMealScreen(): React.JSX.Element {
   const navigation = useNavigation();
+  const { picture, setPicture } = usePicture();
+  const { showActionSheetWithOptions } = useActionSheet();
   const { user, type } = useAuth();
   const { categories } = useData();
 
@@ -45,21 +49,46 @@ export default function AddMealScreen(): React.JSX.Element {
   const [time, setTime] = useState<string>(format(new Date(), "HH:mm"));
   const [guests, setGuests] = useState<number>(1);
   const [price, setPrice] = useState<string>("");
-
   const [food, setFood] = useState<string>("");
   const [foods, setFoods] = useState<string[]>([]);
-
   const [address, setAddress] = useState<string>("");
   const [addresses, setAddresses] = useState<string[]>([]);
-
   const [category, setCategory] = useState<string>("");
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (picture) {
+      setImage(picture);
+    }
+  }, [picture]);
+
+  const pickImage = (): void => {
+    const options = ["Prendre une photo", "Sélectionner une image", "Annuler"];
+    const cancelButtonIndex = 2;
+
+    showActionSheetWithOptions(
+      { options, cancelButtonIndex },
+      (selectedIndex: number | undefined) => {
+        switch (selectedIndex) {
+          case 0:
+            navigate(navigation, "Camera");
+            break;
+
+          case 1: {
+            openImageLibrary();
+            break;
+          }
+
+          case cancelButtonIndex:
+            break;
+        }
+      }
+    );
+  };
 
   /**
    * Pick an image from the gallery
    */
-  const pickImage = async () => {
+  async function openImageLibrary(): Promise<void> {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"]
     });
@@ -67,7 +96,7 @@ export default function AddMealScreen(): React.JSX.Element {
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
-  };
+  }
 
   /**
    * Fetch addresses from the API
@@ -185,6 +214,9 @@ export default function AddMealScreen(): React.JSX.Element {
     setFoods([]);
     setAddress("");
     setAddresses([]);
+    setPrice("");
+    setCategory("");
+    setPicture(null);
 
     // Redirect to the home screen
     dispatch(navigation, "Home");
@@ -410,7 +442,7 @@ export default function AddMealScreen(): React.JSX.Element {
 
             <Button
               type="primary"
-              label={`Enregristrez ${type === "particulier" ? "le repas" : "l'événement"}`}
+              label={`Enregistrer ${type === "particulier" ? "le repas" : "l'événement"}`}
               onPress={submit}
             />
           </View>
@@ -496,5 +528,28 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     fontSize: 12
+  },
+  // Camera
+  message: {
+    textAlign: "center",
+    paddingBottom: 10
+  },
+  camera: {
+    flex: 1
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: "row",
+    backgroundColor: "transparent",
+    margin: 64
+  },
+  button: {
+    flex: 1,
+    alignSelf: "flex-end",
+    alignItems: "center"
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: "bold"
   }
 });

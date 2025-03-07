@@ -22,6 +22,9 @@ import UpdateProfileScreen from "./src/screens/UpdateProfileScreen";
 import EventScreen from "./src/screens/EventScreen";
 import EventSummuryScreen from "./src/screens/EventSummuryScreen";
 import EventPaymentScreen from "./src/screens/EventPaymentScreen";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+import Camera from "./src/components/shared/Camera";
+import { PictureProvider } from "./src/providers/PictureProvider";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -100,27 +103,32 @@ export default function App(): React.JSX.Element | null {
   return (
     <AuthProvider>
       <SafeAreaProvider>
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName={isAuthenticated ? "BottomTabs" : "BeforeSignUp"}
-            screenOptions={{ headerShown: false }}
-          >
-            <Stack.Screen name="BeforeSignUp" component={BeforeSignUp} />
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="SignUp" component={SignUpScreen} />
-            <Stack.Screen name="BottomTabs" component={BottomTabs} />
-            <Stack.Screen name="Meal" component={MealScreen} />
-            <Stack.Screen name="Summury" component={SummuryScreen} />
-            <Stack.Screen name="Payment" component={PaymentScreen} />
-            <Stack.Screen name="Event" component={EventScreen} />
-            <Stack.Screen name="EventSummury" component={EventSummuryScreen} />
-            <Stack.Screen name="EventPayment" component={EventPaymentScreen} />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
-            <Stack.Screen name="MyMeals" component={MyMealsScreen} />
-            <Stack.Screen name="UpdateMeal" component={UpdateMealScreen} />
-            <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <ActionSheetProvider>
+          <PictureProvider>
+            <NavigationContainer>
+              <Stack.Navigator
+                initialRouteName={isAuthenticated ? "BottomTabs" : "BeforeSignUp"}
+                screenOptions={{ headerShown: false }}
+              >
+                <Stack.Screen name="BeforeSignUp" component={BeforeSignUp} />
+                <Stack.Screen name="Login" component={LoginScreen} />
+                <Stack.Screen name="SignUp" component={SignUpScreen} />
+                <Stack.Screen name="BottomTabs" component={BottomTabs} />
+                <Stack.Screen name="Meal" component={MealScreen} />
+                <Stack.Screen name="Summury" component={SummuryScreen} />
+                <Stack.Screen name="Payment" component={PaymentScreen} />
+                <Stack.Screen name="Event" component={EventScreen} />
+                <Stack.Screen name="EventSummury" component={EventSummuryScreen} />
+                <Stack.Screen name="EventPayment" component={EventPaymentScreen} />
+                <Stack.Screen name="Profile" component={ProfileScreen} />
+                <Stack.Screen name="MyMeals" component={MyMealsScreen} />
+                <Stack.Screen name="UpdateMeal" component={UpdateMealScreen} />
+                <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen} />
+                <Stack.Screen name="Camera" component={Camera} />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </PictureProvider>
+        </ActionSheetProvider>
       </SafeAreaProvider>
     </AuthProvider>
   );

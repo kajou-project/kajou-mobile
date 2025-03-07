@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import ArrowLeft from "../assets/icons/chevron-left.svg";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
@@ -41,12 +41,32 @@ export default function MyMealsScreen(): React.JSX.Element {
     }
 
     if (data) {
-      setMeals(data);
+      const tmp = [];
+
+      // Récupérer les profils des utilisateurs
+      for (const m of data) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("user_id", m.user_id)
+          .single();
+        const { data: image } = supabase.storage.from("meal_posts").getPublicUrl(m.image);
+
+        m.image = image.publicUrl;
+
+        if (profiles) {
+          m.owner = profiles;
+        }
+
+        tmp.push(m);
+      }
+
+      setMeals(tmp);
     }
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {/* Header */}
       <View
         style={{
@@ -79,9 +99,7 @@ export default function MyMealsScreen(): React.JSX.Element {
           {/* Top Image */}
           <View style={{ position: "relative", marginBottom: -14 }}>
             <Image
-              source={{
-                uri: supabase.storage.from("meal_posts").getPublicUrl(meal.image).data.publicUrl
-              }}
+              source={{ uri: meal.image }}
               style={styles.mealImg}
             />
 
@@ -126,7 +144,7 @@ export default function MyMealsScreen(): React.JSX.Element {
           </View>
         </Pressable>
       ))}
-    </View>
+    </ScrollView>
   );
 }
 

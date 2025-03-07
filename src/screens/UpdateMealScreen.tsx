@@ -50,7 +50,7 @@ export default function UpdateMealScreen({ route }: { route: any }): React.JSX.E
   const [price, setPrice] = useState<string>(meal.price.toString());
 
   const [food, setFood] = useState<string>("");
-  const [foods, setFoods] = useState<string[]>(meal.foods.split(","));
+  const [foods, setFoods] = useState<string[]>(meal.foods ? meal.foods?.split(",") : []);
 
   const [address, setAddress] = useState<string>(meal.address);
   const [addresses, setAddresses] = useState<string[]>([]);
@@ -176,23 +176,30 @@ export default function UpdateMealScreen({ route }: { route: any }): React.JSX.E
     }
 
     // Redirect to the home screen
-    dispatch(navigation, "Home");
+    navigation.goBack();
   }
 
   /**
    * Upload the file to Supabase
    * @returns
    */
-  async function uploadFile(bucket: string): Promise<string | null> {
+  async function uploadFile(bucket: string): Promise<string | boolean> {
     if (!image) {
-      return null;
+      return false;
+    }
+
+    if (image.startsWith("https://czibukajxyhaoykymaey.supabase.co")) {
+      return image.replace(
+        "https://czibukajxyhaoykymaey.supabase.co/storage/v1/object/public/meal_posts/",
+        ""
+      );
     }
 
     // Lire le fichier en binaire
     const fileInfo = await FileSystem.getInfoAsync(image);
     if (!fileInfo.exists) {
       console.error("Le fichier n'existe pas !");
-      return null;
+      return false;
     }
 
     // Définir le chemin de stockage sur Supabase
@@ -221,7 +228,7 @@ export default function UpdateMealScreen({ route }: { route: any }): React.JSX.E
 
     if (error || !data) {
       console.error("Error uploading file:", error);
-      return null;
+      return false;
     }
 
     return data.path;
