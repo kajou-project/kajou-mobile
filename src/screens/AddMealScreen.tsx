@@ -34,6 +34,7 @@ import { dispatch, navigate } from "../utils/navigation";
 import { Category, useData } from "../contexts/DataContext";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { usePicture } from "../contexts/PictureContext";
+import Checkbox from "../components/shared/Checkbox";
 
 export default function AddMealScreen(): React.JSX.Element {
   const navigation = useNavigation();
@@ -54,6 +55,7 @@ export default function AddMealScreen(): React.JSX.Element {
   const [address, setAddress] = useState<string>("");
   const [addresses, setAddresses] = useState<string[]>([]);
   const [category, setCategory] = useState<string>("");
+  const [conditions, setConditions] = useState<boolean>(false);
 
   useEffect(() => {
     if (picture) {
@@ -439,6 +441,13 @@ export default function AddMealScreen(): React.JSX.Element {
                 </View>
               ))}
             </View>
+
+            <Checkbox
+              label="J’ai lu et j’accepte les conditions générales de ventes et d’hygiène."
+              value={conditions}
+              onChange={setConditions}
+              style={{ marginBottom: 24 }}
+            />
 
             <Button
               type="primary"
