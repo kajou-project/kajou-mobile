@@ -27,7 +27,7 @@ import _ from "lodash";
 import { useDynamicHeader } from "../components/navigation/useDynamicHeader";
 import { supabase } from "../utils/supabase";
 import { useAuth } from "../contexts/AuthContext";
-import { format } from "date-fns";
+import { addHours, format } from "date-fns";
 import * as FileSystem from "expo-file-system";
 import { useNavigation } from "@react-navigation/native";
 import { dispatch, navigate } from "../utils/navigation";
@@ -47,7 +47,7 @@ export default function AddMealScreen(): React.JSX.Element {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [date, setDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
-  const [time, setTime] = useState<string>(format(new Date(), "HH:mm"));
+  const [time, setTime] = useState<string>(format(addHours(new Date(), 1), "HH:mm"));
   const [guests, setGuests] = useState<number>(1);
   const [price, setPrice] = useState<string>("");
   const [food, setFood] = useState<string>("");
